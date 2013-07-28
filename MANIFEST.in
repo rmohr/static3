@@ -1,0 +1,2 @@
+recursive-include testdata *.txt *.html *.xml *.kid *.stp *.ico 
+include COPYING
