@@ -1,4 +1,8 @@
 #!/usr/bin/env python2.4
+"""
+Copyright (C) 2012 Roman Mohr <roman@fenkhuber.at>
+"""
+
 """static - A stupidly simple WSGI way to serve static (or mixed) content.
 
 (See the docstrings of the various functions and classes.)

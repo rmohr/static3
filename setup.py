@@ -1,3 +1,7 @@
+"""
+Copyright (C) 2012 Roman Mohr <roman@fenkhuber.at>
+"""
+
 """setup - setuptools based setup for static
 
 Copyright (C) 2006-2009 Luke Arno - http://lukearno.com/
@@ -28,27 +32,18 @@ try:
 except:
     from distutils.core import setup
 
-setup(name='static',
-      version='0.4',
+setup(name='static3',
+      version='0.5',
       description=
       'A really simple WSGI way to serve static (or mixed) content.',
-      long_description="""\
-This distribution provides an easy way to include static content
-in your WSGI applications. There is a convenience method for serving
-files located via pkg_resources. There are also facilities for serving
-mixed (static and dynamic) content using "magic" file handlers.
-Python builtin string substitution and Kid template support are provided
-and it is easy to roll your own handlers. Note that this distribution
-does not require Kid unless you want to use that type of template. Also
-provides a command of the same name as a convenience when you just want
-to share a little content over HTTP, ad hoc.""",
-      author='Luke Arno',
-      author_email='luke.arno@gmail.com',
-      url='http://lukearno.com/projects/static/',
+      long_description=open('README.rst').read(),
+      author='Roman Mohr',
+      author_email='roman@fenkhuber.at',
+      url='https://github.com/rmohr/static3',
       license="LGPL",
       py_modules=['static'],
       packages=[],
-      extras_require={'KidMagic': 'kid'},
+      extras_require={'KidMagic': 'Genshi'},
       entry_points="""
           [console_scripts]
               static=static:command
