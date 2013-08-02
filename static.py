@@ -27,7 +27,7 @@ Luke Arno can be found at http://lukearno.com/
 """
 
 import mimetypes
-import rfc822
+import email.utils as rfc822 
 import time
 import string
 import sys
@@ -88,7 +88,7 @@ class Cling(object):
     def __init__(self, root, **kw):
         """Just set the root and any other attribs passes via **kw."""
         self.root = root
-        for k, v in kw.iteritems():
+        for k, v in kw.items():
             setattr(self, k, v)
 
     def __call__(self, environ, start_response):
@@ -101,7 +101,7 @@ class Cling(object):
         if not self._is_under_root(full_path):
             return self.not_found(environ, start_response)
         if path.isdir(full_path):
-            if full_path[-1] <> '/' or full_path == self.root:
+            if full_path[-1] != '/' or full_path == self.root:
                 location = util.request_uri(environ, include_query=False) + '/'
                 if environ.get('QUERY_STRING'):
                     location += '?' + environ.get('QUERY_STRING')
@@ -129,8 +129,8 @@ class Cling(object):
                 return self._body(full_path, environ, file_like)
             else:
                 return ['']
-        except (IOError, OSError), e:
-            print e
+        except (IOError, OSError) as e:
+            print(e)
             return self.not_found(environ, start_response)
 
     def _full_path(self, path_info):
@@ -171,7 +171,7 @@ def iter_and_close(file_like, block_size):
             block = file_like.read(block_size)
             if block: yield block
             else: raise StopIteration
-        except StopIteration, si:
+        except StopIteration as si:
             file_like.close()
             return 
 
@@ -299,7 +299,7 @@ class BaseMagic(object):
         if self.matches(full_path):
             return full_path[:-len(self.extension)]
         else:
-            raise MagicError, "Path does not match this magic."
+            raise MagicError("Path does not match this magic.")
 
     def matches(self, full_path):
         """Check that path ends with self.extension."""
@@ -391,8 +391,8 @@ def command():
         app = Cling(args[0])
         try:
             make_server(host, port, app).serve_forever()
-        except KeyboardInterrupt, ki:
-            print "Cio, baby!"
+        except KeyboardInterrupt as ki:
+            print("Cio, baby!")
         except:
             sys.exit("Problem initializing server.")
     else:
@@ -406,8 +406,8 @@ def test():
     app = Shock('testdata/pub', magics=magics)
     try:
         make_server('localhost', 9999, validator(app)).serve_forever()
-    except KeyboardInterrupt, ki:
-        print "Ciao, baby!"
+    except KeyboardInterrupt as ki:
+        print("Ciao, baby!")
 
 
 if __name__ == '__main__':

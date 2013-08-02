@@ -48,7 +48,6 @@ to share a little content over HTTP, ad hoc.""",
       license="LGPL",
       py_modules=['static'],
       packages = [],
-      install_requires="wsgiref",
       extras_require={'KidMagic': 'kid'},
       entry_points = """
           [console_scripts]
