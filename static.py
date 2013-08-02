@@ -18,8 +18,8 @@ Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to:
 
-The Free Software Foundation, Inc., 
-51 Franklin Street, Fifth Floor, 
+The Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor,
 Boston, MA  02110-1301, USA.
 
 Luke Arno can be found at http://lukearno.com/
@@ -27,7 +27,7 @@ Luke Arno can be found at http://lukearno.com/
 """
 
 import mimetypes
-import email.utils as rfc822 
+import email.utils as rfc822
 import time
 import string
 import sys
@@ -37,26 +37,32 @@ from wsgiref.headers import Headers
 from wsgiref.simple_server import make_server
 from optparse import OptionParser
 
-try: from pkg_resources import resource_filename, Requirement
-except: pass
+try:
+    from pkg_resources import resource_filename, Requirement
+except:
+    pass
 
-try: import kid
-except: pass
+try:
+    import kid
+except:
+    pass
 
 
-class MagicError(Exception): pass
+class MagicError(Exception):
+    pass
 
 
 class StatusApp:
+
     """Used by WSGI apps to return some HTTP status."""
-    
+
     def __init__(self, status, message=None):
         self.status = status
         if message is None:
             self.message = status
         else:
             self.message = message
-        
+
     def __call__(self, environ, start_response, headers=[]):
         if self.message:
             Headers(headers).add_header('Content-type', 'text/plain')
@@ -68,10 +74,11 @@ class StatusApp:
 
 
 class Cling(object):
+
     """A stupidly simple way to serve static content via WSGI.
-    
+
     Serve the file of the same path as PATH_INFO in self.datadir.
-    
+
     Look up the Content-type in self.content_types by extension
     or use 'text/plain' if the extension is not found.
 
@@ -140,7 +147,7 @@ class Cling(object):
     def _is_under_root(self, full_path):
         """Guard against arbitrary file retrieval."""
         if (path.abspath(full_path) + path.sep)\
-            .startswith(path.abspath(self.root) + path.sep):
+                .startswith(path.abspath(self.root) + path.sep):
             return True
         else:
             return False
@@ -169,30 +176,33 @@ def iter_and_close(file_like, block_size):
     while 1:
         try:
             block = file_like.read(block_size)
-            if block: yield block
-            else: raise StopIteration
+            if block:
+                yield block
+            else:
+                raise StopIteration
         except StopIteration as si:
             file_like.close()
-            return 
+            return
 
 
 def cling_wrap(package_name, dir_name, **kw):
     """Return a Cling that serves from the given package and dir_name.
-    
+
     This uses pkg_resources.resource_filename which is not the
-    recommended way, since it extracts the files. 
-    
-    I think this works fine unless you have some _very_ serious 
-    requirements for static content, in which case you probably 
+    recommended way, since it extracts the files.
+
+    I think this works fine unless you have some _very_ serious
+    requirements for static content, in which case you probably
     shouldn't be serving it through a WSGI app, IMHO. YMMV.
     """
     resource = Requirement.parse(package_name)
     return Cling(resource_filename(resource, dir_name), **kw)
- 
+
 
 class Shock(Cling):
+
     """A stupidly simple way to serve up mixed content.
-    
+
     Serves static content just like Cling (it's superclass)
     except that it process content with the first matching
     magic from self.magics if any apply.
@@ -202,17 +212,17 @@ class Shock(Cling):
     If you are using Shock with the StringMagic class for instance:
 
     shock = Shock('/data', magics=[StringMagic(food='cheese')])
-    
+
     Let's say you have a file called /data/foo.txt.stp containing one line:
 
     "I love to eat $food!"
-    
+
     When you do a GET on /foo.txt you will see this in your browser:
 
     "I love to eat cheese!"
 
     This is really nice if you have a color variable in your css files or
-    something trivial like that. It seems silly to create or change a 
+    something trivial like that. It seems silly to create or change a
     handful of objects for a couple of dynamic bits of text.
     """
 
@@ -230,7 +240,7 @@ class Shock(Cling):
         if path.exists(full_path):
             return full_path
         else:
-            for magic in self.magics: 
+            for magic in self.magics:
                 if path.exists(magic.new_path(full_path)):
                     return magic.new_path(full_path)
             else:
@@ -240,7 +250,7 @@ class Shock(Cling):
         """Guess the mime type magically or using the mimetypes module."""
         magic = self._match_magic(full_path)
         if magic is not None:
-            return (mimetypes.guess_type(magic.old_path(full_path))[0] 
+            return (mimetypes.guess_type(magic.old_path(full_path))[0]
                     or 'text/plain')
         else:
             return mimetypes.guess_type(full_path)[0] or 'text/plain'
@@ -273,10 +283,11 @@ class Shock(Cling):
 
 
 class BaseMagic(object):
+
     """Base class for magic file handling.
 
     Really a do nothing if you were to use this directly.
-    
+
     In a strait forward case you would just override .extension and body().
     (See StringMagic in this module for a simple example of subclassing.)
 
@@ -321,8 +332,9 @@ class BaseMagic(object):
 
 
 class StringMagic(BaseMagic):
+
     """Magic to replace variables in file contents using string.Template.
-    
+
     Using this requires Python2.4.
     """
 
@@ -335,7 +347,7 @@ class StringMagic(BaseMagic):
 
     def body(self, environ, file_like):
         """Pass environ and self.variables in to template.
-        
+
         self.variables overrides environ so that suprises in environ don't
         cause unexpected output if you are passing a value in explicitly.
         """
@@ -349,23 +361,24 @@ class StringMagic(BaseMagic):
 
 
 class KidMagic(StringMagic):
+
     """Like StringMagic only using the Kid templating language.
-    
+
     Using this requires Kid: http://kid.lesscode.org/
     """
-    
+
     extension = '.kid'
-    
+
     def body(self, environ, full_path):
         """Pass environ and **self.variables into the template."""
-        template = kid.Template(file=full_path, 
-                                environ=environ, 
+        template = kid.Template(file=full_path,
+                                environ=environ,
                                 **self.variables)
         return [template.serialize()]
 
 
 def command():
-    parser = OptionParser(usage="%prog DIR [HOST][:][PORT]", 
+    parser = OptionParser(usage="%prog DIR [HOST][:][PORT]",
                           version="static 0.3.6")
     options, args = parser.parse_args()
     if len(args) in (1, 2):
@@ -412,4 +425,3 @@ def test():
 
 if __name__ == '__main__':
     test()
-
