@@ -43,7 +43,10 @@ setup(name='static3',
       license="LGPL",
       py_modules=['static'],
       packages=[],
-      extras_require={'KidMagic': 'Genshi'},
+      extras_require={
+          'KidMagic': 'kid',
+          'GenshiMagic': 'Genshi',
+          },
       entry_points="""
           [console_scripts]
               static=static:command

@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.4
+#!/usr/bin/env python
 """
 Copyright (C) 2012 Roman Mohr <roman@fenkhuber.at>
 """
@@ -51,6 +51,11 @@ try:
 except:
     pass
 
+try:
+    from genshi.template import MarkupTemplate
+except:
+    pass
+
 
 class MagicError(Exception):
     pass
@@ -72,9 +77,9 @@ class StatusApp:
             Headers(headers).add_header('Content-type', 'text/plain')
         start_response(self.status, headers)
         if environ['REQUEST_METHOD'] == 'HEAD':
-            return [""]
+            return ["".encode()]
         else:
-            return [self.message]
+            return [self.message.encode()]
 
 
 class Cling(object):
@@ -357,11 +362,11 @@ class StringMagic(BaseMagic):
         """
         variables = environ.copy()
         variables.update(self.variables)
-        template = string.Template(file_like.read())
+        template = string.Template(file_like.read().decode())
         if self.safe is True:
-            return [template.safe_substitute(variables)]
+            return [template.safe_substitute(variables).encode()]
         else:
-            return [template.substitute(variables)]
+            return [template.substitute(variables).encode()]
 
 
 class KidMagic(StringMagic):
@@ -378,7 +383,27 @@ class KidMagic(StringMagic):
         template = kid.Template(file=full_path,
                                 environ=environ,
                                 **self.variables)
-        return [template.serialize()]
+        return [template.serialize().encode()]
+
+
+class GenshiMagic(StringMagic):
+
+    """Like StringMagic only using the Genshi templating language.
+
+    Using this requires Genshi
+    """
+
+    extension = '.genshi'
+
+    def body(self, environ, full_path):
+        """Pass environ and **self.variables into the template."""
+
+        template = MarkupTemplate(full_path.read().decode())
+        variables = self.variables.copy()
+        variables["environ"] = environ
+        return [template.generate(**variables)
+                .render('html', doctype='html')
+                .encode()]
 
 
 def command():
@@ -419,7 +444,8 @@ def command():
 
 def test():
     from wsgiref.validate import validator
-    magics = StringMagic(title="String Test"), KidMagic(title="Kid Test")
+    magics = (StringMagic(title="String Test"),
+              KidMagic(title="Kid Test"), GenshiMagic(title="Genshi Test"))
     app = Shock('testdata/pub', magics=magics)
     try:
         make_server('localhost', 9999, validator(app)).serve_forever()
