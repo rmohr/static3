@@ -17,4 +17,7 @@ matrix:
     - python: "3.3"
       env: PIP_USE_MIRRORS=true DEPS="kid genshi"
 
+install:
+  - "pip install $DEPS"
+
 script: "python setup.py test"
