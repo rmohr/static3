@@ -22,12 +22,12 @@ import webtest
 import sys
 
 @pytest.fixture
-def _cling(tmpdir):
+def _cling():
     from static import Cling
     return Cling(root="testdata/pub")
 
 @pytest.fixture
-def _shock(tmpdir):
+def _shock():
     from static import Shock, StringMagic, KidMagic, GenshiMagic
     magics = (StringMagic(title="String Test"),
               KidMagic(title="Kid Test"), GenshiMagic(title="Genshi Test"))
@@ -43,13 +43,27 @@ def shock(_shock):
 
 @pytest.mark.skipif("sys.version_info >= (3,0)")
 def test_kid(shock):
-    pass
+    response = shock.get("/kid.html.kid") 
+    assert "Title: Kid Test" in response
+    assert "REQUEST_METHOD" in response
 
 def test_genshi(shock):
-    pass
+    response = shock.get("/test.html.genshi") 
+    assert "Title: Genshi Test" in response
+    assert "REQUEST_METHOD" in response
 
 def test_string(shock):
-    pass
+    response = shock.get("/sub.html.stp") 
+    assert "<h1>String Test</h1>" in response
+    assert "Path info: /sub.html." in response
 
-def test_static(shock):
+def test_static(cling):
+    response = cling.get("/index.html")
+    assert "Mixed Content" in response
+    assert response.content_type == "text/html"
+    response = cling.get("/test.xml")
+    assert "green" in response
+    assert response.content_type == "text/xml"
+
+def test_encoding(cling):
     pass
