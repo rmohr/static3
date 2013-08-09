@@ -1,5 +1,5 @@
 """
-Copyright (C) 2012 Roman Mohr <roman@fenkhuber.at>
+Copyright (C) 2013 Roman Mohr <roman@fenkhuber.at>
 """
 
 """setup - setuptools based setup for static
@@ -27,10 +27,23 @@ Luke Arno can be found at http://lukearno.com/
 
 """
 
-try:
-    from setuptools import setup
-except:
-    from distutils.core import setup
+from setuptools import setup
+from setuptools.command.test import test as TestCommand
+import sys
+
+class PyTest(TestCommand):
+
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = ['--cov', 'static' , 'tests']
+        self.test_suite = True
+
+    def run_tests(self):
+        # import here, cause outside the eggs aren't loaded
+        import pytest
+        errno = pytest.main(self.test_args)
+        sys.exit(errno)
+
 
 setup(name='static3',
       version='0.5',
@@ -43,6 +56,8 @@ setup(name='static3',
       license="LGPL",
       py_modules=['static'],
       packages=[],
+      cmdclass={'test': PyTest},
+      tests_require=['pytest', 'webtest', 'pytest-cov'],
       extras_require={
           'KidMagic': 'kid',
           'GenshiMagic': 'Genshi',
