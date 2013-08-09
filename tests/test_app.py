@@ -21,10 +21,12 @@ import webtest
 
 import sys
 
+
 @pytest.fixture
 def _cling():
     from static import Cling
     return Cling(root="testdata/pub")
+
 
 @pytest.fixture
 def _shock():
@@ -33,29 +35,35 @@ def _shock():
               KidMagic(title="Kid Test"), GenshiMagic(title="Genshi Test"))
     return Shock(root="testdata/pub", magics=magics)
 
+
 @pytest.fixture
 def cling(_cling):
     return webtest.TestApp(_cling)
+
 
 @pytest.fixture
 def shock(_shock):
     return webtest.TestApp(_shock)
 
+
 @pytest.mark.skipif("sys.version_info >= (3,0)")
 def test_kid(shock):
-    response = shock.get("/kid.html.kid") 
+    response = shock.get("/kid.html.kid")
     assert "Title: Kid Test" in response
     assert "REQUEST_METHOD" in response
 
+
 def test_genshi(shock):
-    response = shock.get("/test.html.genshi") 
+    response = shock.get("/test.html.genshi")
     assert "Title: Genshi Test" in response
     assert "REQUEST_METHOD" in response
 
+
 def test_string(shock):
-    response = shock.get("/sub.html.stp") 
+    response = shock.get("/sub.html.stp")
     assert "<h1>String Test</h1>" in response
     assert "Path info: /sub.html." in response
+
 
 def test_static(cling):
     response = cling.get("/index.html")
@@ -63,7 +71,10 @@ def test_static(cling):
     assert response.content_type == "text/html"
     response = cling.get("/test.xml")
     assert "green" in response
-    assert response.content_type == "text/xml"
+    #dependes on the mimetypes version, both is fine
+    assert (response.content_type == "text/xml" 
+            or response.content_type == "application/xml")
+
 
 def test_encoding(cling):
     pass
