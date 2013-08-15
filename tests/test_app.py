@@ -35,6 +35,10 @@ def _shock():
               KidMagic(title="Kid Test"), GenshiMagic(title="Genshi Test"))
     return Shock(root="testdata/pub", magics=magics)
 
+@pytest.fixture
+def ascii_shock(_shock):
+    _shock.encoding='ascii'
+    return webtest.TestApp(_shock)
 
 @pytest.fixture
 def cling(_cling):
@@ -54,7 +58,7 @@ def test_kid(shock):
 
 
 def test_genshi(shock):
-    response = shock.get("/test.html.genshi")
+    response = shock.get("/test.html")
     assert "Title: Genshi Test" in response
     assert "REQUEST_METHOD" in response
 
@@ -65,7 +69,7 @@ def test_string(shock):
     assert "Path info: /sub.html." in response
 
 
-def test_static(cling):
+def test_static_cling(cling):
     response = cling.get("/index.html")
     assert "Mixed Content" in response
     assert response.content_type == "text/html"
@@ -75,6 +79,16 @@ def test_static(cling):
     assert (response.content_type == "text/xml" 
             or response.content_type == "application/xml")
 
+def test_static_shock(shock):
+    response = shock.get("/index.html")
+    assert "Mixed Content" in response
 
-def test_encoding(cling):
-    pass
+@pytest.mark.skipif("sys.version_info >= (3,0)")
+def test_encoding(ascii_shock):
+    with pytest.raises(UnicodeEncodeError):
+        response = ascii_shock.get("/encoding.html")
+
+@pytest.mark.skipif("sys.version_info < (3,0)")
+def test_decoding(ascii_shock):
+    with pytest.raises(UnicodeDecodeError):
+        response = ascii_shock.get("/encoding.html")

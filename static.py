@@ -61,12 +61,33 @@ class MagicError(Exception):
     pass
 
 
+def _encode(string, encoding):
+    if sys.version_info.major > 2:
+        return string.encode(encoding=encoding, errors='strict')
+    else:
+        if type(u'') == type(string):
+            string = string.encode(encoding)
+        return string
+
+def _decode(string, encoding):
+    if sys.version_info.major > 2:
+        return string.decode(encoding=encoding, errors='strict')
+    else:
+        return string
+
+def _open(filename, encoding):
+    if sys.version_info.major > 2:
+        return open(filename, 'r', encoding=encoding, errors='strict') 
+    else:
+        return open(filename, 'rb')
+
 class StatusApp:
 
     """Used by WSGI apps to return some HTTP status."""
 
-    def __init__(self, status, message=None):
+    def __init__(self, status, message=None, encoding=sys.getdefaultencoding()):
         self.status = status
+        self.encoding = encoding
         if message is None:
             self.message = status
         else:
@@ -77,9 +98,9 @@ class StatusApp:
             Headers(headers).add_header('Content-type', 'text/plain')
         start_response(self.status, headers)
         if environ['REQUEST_METHOD'] == 'HEAD':
-            return ["".encode()]
+            return [_encode("",self.econding)]
         else:
-            return [self.message.encode()]
+            return [_encode(self.message, self.encoding)]
 
 
 class Cling(object):
@@ -104,6 +125,8 @@ class Cling(object):
     def __init__(self, root, **kw):
         """Just set the root and any other attribs passes via **kw."""
         self.root = root
+        self.encoding = sys.getdefaultencoding()
+
         for k, v in kw.items():
             setattr(self, k, v)
 
@@ -143,6 +166,7 @@ class Cling(object):
             start_response("200 OK", headers)
             if environ['REQUEST_METHOD'] == 'GET':
                 return self._body(full_path, environ, file_like)
+                      
             else:
                 return ['']
         except (IOError, OSError) as e:
@@ -277,7 +301,7 @@ class Shock(Cling):
         """Return the appropriate file object."""
         magic = self._match_magic(full_path)
         if magic is not None:
-            return magic.file_like(full_path)
+            return magic.file_like(full_path, self.encoding)
         else:
             return open(full_path, 'rb')
 
@@ -285,7 +309,8 @@ class Shock(Cling):
         """Return an iterator over the body of the response."""
         magic = self._match_magic(full_path)
         if magic is not None:
-            return magic.body(environ, file_like)
+            return [_encode(s,self.encoding) for s in magic.body(environ,
+                file_like)]
         else:
             way_to_send = environ.get('wsgi.file_wrapper', iter_and_close)
             return way_to_send(file_like, self.block_size)
@@ -331,9 +356,9 @@ class BaseMagic(object):
         mtime = int(time.time())
         return str(mtime), rfc822.formatdate(mtime)
 
-    def file_like(self, full_path):
+    def file_like(self, full_path, encoding):
         """Return a file object for path."""
-        return open(full_path, 'rb')
+        return _open(full_path, encoding)
 
     def body(self, environ, file_like):
         """Return an iterator over the body of the response."""
@@ -362,11 +387,11 @@ class StringMagic(BaseMagic):
         """
         variables = environ.copy()
         variables.update(self.variables)
-        template = string.Template(file_like.read().decode())
+        template = string.Template(file_like.read())
         if self.safe is True:
-            return [template.safe_substitute(variables).encode()]
+            return [template.safe_substitute(variables)]
         else:
-            return [template.substitute(variables).encode()]
+            return [template.substitute(variables)]
 
 
 class KidMagic(StringMagic):
@@ -383,7 +408,7 @@ class KidMagic(StringMagic):
         template = kid.Template(file=full_path,
                                 environ=environ,
                                 **self.variables)
-        return [template.serialize().encode()]
+        return [template.serialize()]
 
 
 class GenshiMagic(StringMagic):
@@ -398,12 +423,11 @@ class GenshiMagic(StringMagic):
     def body(self, environ, full_path):
         """Pass environ and **self.variables into the template."""
 
-        template = MarkupTemplate(full_path.read().decode())
+        template = MarkupTemplate(full_path.read())
         variables = self.variables.copy()
         variables["environ"] = environ
         return [template.generate(**variables)
-                .render('html', doctype='html')
-                .encode()]
+                .render('html', doctype='html')]
 
 
 def command():

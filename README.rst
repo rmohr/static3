@@ -32,6 +32,11 @@ Installation and Usage
 
 TODO
 
+Unicode Support
+^^^^^^^^^^^^^^^
+
+TODO
+
 .. _static: https://pypi.python.org/pypi/static
 .. _kid: https://pypi.python.org/pypi/kid
 .. _Genshi: https://pypi.python.org/pypi/Genshi
