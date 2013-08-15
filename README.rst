@@ -30,6 +30,10 @@ to share a little content over HTTP, ad hoc.
 Installation and Usage
 ----------------------
 
+Latest release via PIP::
+
+    pip install static3
+
 Installation via GitHub::
 
     git clone https://github.com/rmohr/static3.git
