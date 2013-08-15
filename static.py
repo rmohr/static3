@@ -62,7 +62,7 @@ class MagicError(Exception):
 
 
 def _encode(string, encoding):
-    if sys.version_info.major > 2:
+    if sys.version_info[0] > 2:
         return string.encode(encoding=encoding, errors='strict')
     else:
         if type(u'') == type(string):
@@ -70,13 +70,13 @@ def _encode(string, encoding):
         return string
 
 def _decode(string, encoding):
-    if sys.version_info.major > 2:
+    if sys.version_info[0] > 2:
         return string.decode(encoding=encoding, errors='strict')
     else:
         return string
 
 def _open(filename, encoding):
-    if sys.version_info.major > 2:
+    if sys.version_info[0] > 2:
         return open(filename, 'r', encoding=encoding, errors='strict') 
     else:
         return open(filename, 'rb')
