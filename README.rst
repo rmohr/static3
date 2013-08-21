@@ -48,7 +48,7 @@ files you want to make accessible. You get a full WSGI app with an example as
 simple as that::
 
     from static import Cling
-    from wsgiref import make_server
+    from wsgiref.simple_server import make_server
     my_app = Cling("/my/directory")
     make_server("localhost", 9999, my_app).serve_forever()
 
@@ -66,8 +66,8 @@ the kid backend, name your file 'index.html.kid'. A short example might look
 like this::
 
     from static import Shock, KidMagic
-    from wsgiref import make_server
-    my_app = Shock("/my/directory", KidMagic(title="Hello World"))
+    from wsgiref.simple_server import make_server
+    my_app = Shock("/my/directory", magics=[KidMagic(title="Hello World")])
     make_server("localhost", 9999, my_app).serve_forever()
 
 And the example 'index.html.kid'::
