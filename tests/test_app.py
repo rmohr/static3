@@ -35,10 +35,12 @@ def _shock():
               KidMagic(title="Kid Test"), GenshiMagic(title="Genshi Test"))
     return Shock(root="testdata/pub", magics=magics)
 
+
 @pytest.fixture
 def ascii_shock(_shock):
-    _shock.encoding='ascii'
+    _shock.encoding = 'ascii'
     return webtest.TestApp(_shock)
+
 
 @pytest.fixture
 def cling(_cling):
@@ -75,18 +77,23 @@ def test_static_cling(cling):
     assert response.content_type == "text/html"
     response = cling.get("/test.xml")
     assert "green" in response
-    #dependes on the mimetypes version, both is fine
-    assert (response.content_type == "text/xml" 
+    # dependes on the mimetypes version, both is fine
+    assert (response.content_type == "text/xml"
             or response.content_type == "application/xml")
+    response = cling.get("/unicode.html")
+    assert u"\u00f6\u00e4\u00fc" in response
+
 
 def test_static_shock(shock):
     response = shock.get("/index.html")
     assert "Mixed Content" in response
 
+
 @pytest.mark.skipif("sys.version_info >= (3,0)")
 def test_encoding(ascii_shock):
     with pytest.raises(UnicodeEncodeError):
         response = ascii_shock.get("/encoding.html")
+
 
 @pytest.mark.skipif("sys.version_info < (3,0)")
 def test_decoding(ascii_shock):
