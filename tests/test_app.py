@@ -22,6 +22,7 @@ import webtest
 import sys
 from static import u
 
+
 @pytest.fixture
 def _cling():
     from static import Cling

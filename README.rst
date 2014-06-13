@@ -7,8 +7,8 @@ static3 - A really simple WSGI way to serve static (or mixed) content.
     :target: https://travis-ci.org/rmohr/static3
 
 :Authors: Roman Mohr <roman@fenkhuber.at>
-:Version: 0.5
-:Date: 2013-08-15
+:Version: 0.5.1
+:Date: 2014-06-14
 :Code: https://github.com/rmohr/static3
 
 .. contents:: Table of Contents

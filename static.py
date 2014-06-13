@@ -65,6 +65,7 @@ else:
     def u(x):
         return x
 
+
 class MagicError(Exception):
     pass
 
@@ -77,17 +78,20 @@ def _encode(string, encoding):
             string = string.encode(encoding)
         return string
 
+
 def _decode(string, encoding):
     if sys.version_info[0] > 2:
         return string.decode(encoding=encoding, errors='strict')
     else:
         return string
 
+
 def _open(filename, encoding):
     if sys.version_info[0] > 2:
-        return open(filename, 'r', encoding=encoding, errors='strict') 
+        return open(filename, 'r', encoding=encoding, errors='strict')
     else:
         return open(filename, 'rb')
+
 
 class StatusApp:
 
@@ -106,7 +110,7 @@ class StatusApp:
             Headers(headers).add_header('Content-type', 'text/plain')
         start_response(self.status, headers)
         if environ['REQUEST_METHOD'] == 'HEAD':
-            return [_encode("",self.econding)]
+            return [_encode("", self.econding)]
         else:
             return [_encode(self.message, self.encoding)]
 
@@ -174,7 +178,7 @@ class Cling(object):
             start_response("200 OK", headers)
             if environ['REQUEST_METHOD'] == 'GET':
                 return self._body(full_path, environ, file_like)
-                      
+
             else:
                 return ['']
         except (IOError, OSError) as e:
