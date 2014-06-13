@@ -20,7 +20,7 @@ import pytest
 import webtest
 
 import sys
-
+from static import u
 
 @pytest.fixture
 def _cling():
@@ -81,7 +81,7 @@ def test_static_cling(cling):
     assert (response.content_type == "text/xml"
             or response.content_type == "application/xml")
     response = cling.get("/unicode.html")
-    assert u"\u00f6\u00e4\u00fc" in response
+    assert u('\u00f6\u00e4\u00fc') in response
 
 
 def test_static_shock(shock):

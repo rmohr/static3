@@ -56,6 +56,14 @@ try:
 except:
     pass
 
+if sys.version < '3':
+    import codecs
+
+    def u(x):
+        return codecs.unicode_escape_decode(x)[0]
+else:
+    def u(x):
+        return x
 
 class MagicError(Exception):
     pass
@@ -65,7 +73,7 @@ def _encode(string, encoding):
     if sys.version_info[0] > 2:
         return string.encode(encoding=encoding, errors='strict')
     else:
-        if type(u'') == type(string):
+        if type(u('')) == type(string):
             string = string.encode(encoding)
         return string
 
