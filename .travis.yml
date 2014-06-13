@@ -3,18 +3,28 @@ language: python
 python:
   - "2.6"
   - "2.7"
+  - "3.2"
   - "3.3"
+  - "3.4"
   - "pypy"
 
 env:
+  - PIP_USE_MIRRORS=true DEPS="genshi"
   - PIP_USE_MIRRORS=true DEPS="kid genshi"
 
 matrix:
-  include:
-    - python: "3.3"
-      env: PIP_USE_MIRRORS=true DEPS="genshi"
   exclude:
+    - python: "2.6"
+      env: PIP_USE_MIRRORS=true DEPS="genshi"
+    - python: "2.7"
+      env: PIP_USE_MIRRORS=true DEPS="genshi"
+    - python: "pypy"
+      env: PIP_USE_MIRRORS=true DEPS="genshi"
+    - python: "3.2"
+      env: PIP_USE_MIRRORS=true DEPS="kid genshi"
     - python: "3.3"
+      env: PIP_USE_MIRRORS=true DEPS="kid genshi"
+    - python: "3.4"
       env: PIP_USE_MIRRORS=true DEPS="kid genshi"
 
 install:

@@ -92,10 +92,10 @@ def test_static_shock(shock):
 @pytest.mark.skipif("sys.version_info >= (3,0)")
 def test_encoding(ascii_shock):
     with pytest.raises(UnicodeEncodeError):
-        response = ascii_shock.get("/encoding.html")
+        ascii_shock.get("/encoding.html")
 
 
 @pytest.mark.skipif("sys.version_info < (3,0)")
 def test_decoding(ascii_shock):
     with pytest.raises(UnicodeDecodeError):
-        response = ascii_shock.get("/encoding.html")
+        ascii_shock.get("/encoding.html")

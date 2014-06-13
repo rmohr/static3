@@ -3,6 +3,9 @@
 static3 - A really simple WSGI way to serve static (or mixed) content.
 ====================================================================================
 
+.. image:: https://travis-ci.org/rmohr/static3.svg?branch=master
+    :target: https://travis-ci.org/rmohr/static3
+
 :Authors: Roman Mohr <roman@fenkhuber.at>
 :Version: 0.5
 :Date: 2013-08-15
@@ -114,7 +117,7 @@ set an encoding for the sites provided. This can be done via the
 
 When using `Cling` or `Shock` to serve static content the
 encoding need not to be set, as the content is just streamed through.
-If you have templates encoded in different formats an instance of
+If you have templates encoded in different formats, an instance of
 `Shock` needs to be instantiated for every codec used.
 
 .. _static: https://pypi.python.org/pypi/static
