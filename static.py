@@ -160,6 +160,10 @@ class Cling(object):
                 return self.moved_permanently(environ, start_response, headers)
             else:
                 full_path = self._full_path(path_info + self.index_file)
+        prezipped = ('gzip' in environ.get('HTTP_ACCEPT_ENCODING', [])
+                     and path.exists(full_path + '.gz'))
+        if prezipped:
+            full_path += '.gz'
         content_type = self._guess_type(full_path)
         try:
             etag, last_modified = self._conditions(full_path, environ)
@@ -175,6 +179,9 @@ class Cling(object):
                 return self.not_modified(environ, start_response, headers)
             file_like = self._file_like(full_path)
             headers.append(('Content-Type', content_type))
+            if prezipped:
+                headers.extend([('Content-Encoding', 'gzip'),
+                                ('Vary', 'Accept-Encoding')])
             start_response("200 OK", headers)
             if environ['REQUEST_METHOD'] == 'GET':
                 return self._body(full_path, environ, file_like)
@@ -225,7 +232,7 @@ def iter_and_close(file_like, block_size):
                 yield block
             else:
                 raise StopIteration
-        except StopIteration as si:
+        except StopIteration:
             file_like.close()
             return
 
@@ -321,8 +328,8 @@ class Shock(Cling):
         """Return an iterator over the body of the response."""
         magic = self._match_magic(full_path)
         if magic is not None:
-            return [_encode(s,self.encoding) for s in magic.body(environ,
-                file_like)]
+            return [_encode(s, self.encoding) for s in magic.body(environ,
+                                                                  file_like)]
         else:
             way_to_send = environ.get('wsgi.file_wrapper', iter_and_close)
             return way_to_send(file_like, self.block_size)
@@ -469,7 +476,7 @@ def command():
         app = Cling(args[0])
         try:
             make_server(host, port, app).serve_forever()
-        except KeyboardInterrupt as ki:
+        except KeyboardInterrupt:
             print("Cio, baby!")
         except:
             sys.exit("Problem initializing server.")
@@ -485,7 +492,7 @@ def test():
     app = Shock('testdata/pub', magics=magics)
     try:
         make_server('localhost', 9999, validator(app)).serve_forever()
-    except KeyboardInterrupt as ki:
+    except KeyboardInterrupt:
         print("Ciao, baby!")
 
 

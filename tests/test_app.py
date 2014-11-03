@@ -85,6 +85,15 @@ def test_static_cling(cling):
     assert u('\u00f6\u00e4\u00fc') in response
 
 
+def test_gzip_cling(cling):
+    response = cling.get("/gzipped.html", headers=[('Accept-Encoding',
+                                                    'gzip, deflate')])
+    assert "Mixed Content" in response
+    assert response.content_type == "text/html"
+    assert 'Content-Encoding' not in response.headers
+    assert response.headers['Vary'] == 'Accept-Encoding'
+
+
 def test_static_shock(shock):
     response = shock.get("/index.html")
     assert "Mixed Content" in response
