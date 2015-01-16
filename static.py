@@ -110,7 +110,7 @@ class StatusApp:
             Headers(headers).add_header('Content-type', 'text/plain')
         start_response(self.status, headers)
         if environ['REQUEST_METHOD'] == 'HEAD':
-            return [_encode("", self.econding)]
+            return [_encode("", self.encoding)]
         else:
             return [_encode(self.message, self.encoding)]
 
