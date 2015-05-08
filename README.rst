@@ -55,7 +55,13 @@ simple as that::
     my_app = Cling("/my/directory")
     make_server("localhost", 9999, my_app).serve_forever()
 
-Now you can access everything in the given directory via http://localhost:9999.
+Now you can access everything in the given directory via http://localhost:9999.D
+
+Serving compressed files
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+If a gzip compressed file with the ´gz´ postfix is present, it is served, along with the corresponding headers.
+So if the file 'index.html' and the file 'index.html.gz' are present, the file 'index.html.gz' is served, if the the client indicated that it supports gzipped content. 
 
 Shock
 ^^^^^
