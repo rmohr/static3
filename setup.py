@@ -49,7 +49,7 @@ setup(name='static3',
       version='0.6.0',
       description=
       'A really simple WSGI way to serve static (or mixed) content.',
-      long_description=open('README.rst').read(),
+      long_description=open('README.rst', 'rb').read().decode('utf-8'),
       author='Roman Mohr',
       author_email='roman@fenkhuber.at',
       url='https://github.com/rmohr/static3',
