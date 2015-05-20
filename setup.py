@@ -31,11 +31,12 @@ from setuptools import setup
 from setuptools.command.test import test as TestCommand
 import sys
 
+
 class PyTest(TestCommand):
 
     def finalize_options(self):
         TestCommand.finalize_options(self)
-        self.test_args = ['--cov', 'static' , 'tests']
+        self.test_args = ['--cov', 'static', 'tests']
         self.test_suite = True
 
     def run_tests(self):
@@ -46,7 +47,7 @@ class PyTest(TestCommand):
 
 
 setup(name='static3',
-      version='0.6.0',
+      version='0.6.1',
       description=
       'A really simple WSGI way to serve static (or mixed) content.',
       long_description=open('README.rst', 'rb').read().decode('utf-8'),

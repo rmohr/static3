@@ -6,11 +6,6 @@ static3 - A really simple WSGI way to serve static (or mixed) content.
 .. image:: https://travis-ci.org/rmohr/static3.svg?branch=master
     :target: https://travis-ci.org/rmohr/static3
 
-:Authors: Roman Mohr <roman@fenkhuber.at>
-:Version: 0.6.0
-:Date: 2015-05-08
-:Code: https://github.com/rmohr/static3
-
 .. contents:: Table of Contents
   :backlinks: top
 
@@ -61,7 +56,7 @@ Serving compressed files
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 If a gzip compressed file with the ´gz´ postfix is present, it is served, along with the corresponding headers.
-So if the file 'index.html' and the file 'index.html.gz' are present, the file 'index.html.gz' is served, if the the client indicated that it supports gzipped content. 
+So if the file 'index.html' and the file 'index.html.gz' are present, the file 'index.html.gz' is served, if the the client indicated that it supports gzipped content.
 
 Shock
 ^^^^^
@@ -81,8 +76,8 @@ like this::
 
 And the example 'index.html.kid'::
 
-    <html xmlns="http://www.w3.org/1999/xhtml" 
-      xmlns:py="http://purl.org/kid/ns#" 
+    <html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://purl.org/kid/ns#"
       xml:lang="en">
       <head>
       </head>
@@ -93,7 +88,7 @@ And the example 'index.html.kid'::
 
 A similar template 'index.html.genshi' for Genshi::
 
-    <html xmlns="http://www.w3.org/1999/xhtml" 
+    <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:py="http://genshi.edgewall.org/"
       xml:lang="en">
       <head>
@@ -114,7 +109,7 @@ Unicode Support
 ^^^^^^^^^^^^^^^
 
 When using a template system in Python3 it might be necessary to explicitly
-set an encoding for the sites provided. This can be done via the 
+set an encoding for the sites provided. This can be done via the
 `encoding` attribute of `Shock`::
 
     from static import Shock
