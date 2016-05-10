@@ -19,7 +19,6 @@
 import pytest
 import webtest
 
-import sys
 from static import u
 
 
@@ -83,6 +82,18 @@ def test_static_cling(cling):
             or response.content_type == "application/xml")
     response = cling.get("/unicode.html")
     assert u('\u00f6\u00e4\u00fc') in response
+
+
+def test_cling_head(cling):
+    response = cling.head("/index.html")
+    assert response.content_type == "text/html"
+    assert response.body == b''
+
+
+def test_shock_head(shock):
+    response = shock.head("/index.html")
+    assert response.content_type == "text/html"
+    assert response.body == b''
 
 
 def test_gzip_cling(cling):
