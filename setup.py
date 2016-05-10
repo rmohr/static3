@@ -47,7 +47,7 @@ class PyTest(TestCommand):
 
 
 setup(name='static3',
-      version='0.6.1',
+      version='0.6.2',
       description=
       'A really simple WSGI way to serve static (or mixed) content.',
       long_description=open('README.rst', 'rb').read().decode('utf-8'),
@@ -62,7 +62,7 @@ setup(name='static3',
       extras_require={
           'KidMagic': 'kid',
           'GenshiMagic': 'Genshi',
-          },
+      },
       entry_points="""
           [console_scripts]
               static=static:command
