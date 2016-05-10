@@ -187,7 +187,7 @@ class Cling(object):
                 return self._body(full_path, environ, file_like)
 
             else:
-                return ['']
+                return [b'']
         except (IOError, OSError) as e:
             print(e)
             return self.not_found(environ, start_response)
@@ -489,7 +489,8 @@ def test():
     from wsgiref.validate import validator
     magics = (StringMagic(title="String Test"),
               KidMagic(title="Kid Test"), GenshiMagic(title="Genshi Test"))
-    app = Shock('testdata/pub', magics=magics)
+    #app = Shock('testdata/pub', magics=magics)
+    app = Cling('testdata/pub')
     try:
         make_server('localhost', 9999, validator(app)).serve_forever()
     except KeyboardInterrupt:
