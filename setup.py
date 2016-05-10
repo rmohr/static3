@@ -47,7 +47,7 @@ class PyTest(TestCommand):
 
 
 setup(name='static3',
-      version='0.6.2',
+      version='0.7.0',
       description=
       'A really simple WSGI way to serve static (or mixed) content.',
       long_description=open('README.rst', 'rb').read().decode('utf-8'),
