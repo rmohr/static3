@@ -105,6 +105,35 @@ def test_gzip_cling(cling):
     assert response.headers['Vary'] == 'Accept-Encoding'
 
 
+def test_headers_cling():
+    from static import Cling
+
+    def get(headers, url='/index.html'):
+        app = webtest.TestApp(Cling(root="testdata/pub", headers=headers))
+        return app.get(url)
+
+    response = get([{'type': 'text/html', 'Cache-Control': 'max-age=10'}])
+    assert response.headers['Cache-Control'] == 'max-age=10'
+
+    response = get(
+        [{'type': 'text/html', 'Cache-Control': 'max-age=10'}], '/test.xml')
+    assert 'Cache-Control' not in response.headers.keys()
+
+    response = get([{'ext': 'html', 'Cache-Control': 'max-age=10'}])
+    assert response.headers['Cache-Control'] == 'max-age=10'
+
+    response = get(
+        [{'ext': 'html', 'Cache-Control': 'max-age=10'}], '/test.xml')
+    assert 'Cache-Control' not in response.headers.keys()
+
+    response = get([{'prefix': '/index', 'Cache-Control': 'max-age=10'}])
+    assert response.headers['Cache-Control'] == 'max-age=10'
+
+    response = get(
+        [{'prefix': '/index', 'Cache-Control': 'max-age=10'}], '/test.xml')
+    assert 'Cache-Control' not in response.headers.keys()
+
+
 def test_static_shock(shock):
     response = shock.get("/index.html")
     assert "Mixed Content" in response

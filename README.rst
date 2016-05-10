@@ -58,6 +58,20 @@ Serving compressed files
 If a gzip compressed file with the ´gz´ postfix is present, it is served, along with the corresponding headers.
 So if the file 'index.html' and the file 'index.html.gz' are present, the file 'index.html.gz' is served, if the the client indicated that it supports gzipped content.
 
+Additionally, you can configure arbitrary headers. You can match files by mime
+type, file extension, or prefix. For example, the following would add
+Cache-Control headers to paths with a css mime type for 10s, no-cache for all
+paths ending in .js for 100s, and add CORS header to all paths under the /imgs/
+dir::
+
+    headers = [
+        {'type': 'text/css', 'Cache-Control': 'max-age=10'},
+        {'ext': '.js', 'Cache-Control': 'no-cache'},
+        {'prefix': '/imgs/', 'Access-Control-Allow-Origin': '*'},
+    ]
+    Cling("/my/directory", headers=headers)
+
+
 Shock
 ^^^^^
 
