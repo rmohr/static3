@@ -182,6 +182,7 @@ class Cling(object):
             if prezipped:
                 headers.extend([('Content-Encoding', 'gzip'),
                                 ('Vary', 'Accept-Encoding')])
+            self._add_headers(headers, path_info, content_type)
             start_response("200 OK", headers)
             if environ['REQUEST_METHOD'] == 'GET':
                 return self._body(full_path, environ, file_like)
@@ -212,6 +213,18 @@ class Cling(object):
         """Return a tuple of etag, last_modified by mtime from stat."""
         mtime = stat(full_path).st_mtime
         return str(mtime), rfc822.formatdate(mtime)
+
+    def _add_headers(self, headers, path, content_type):
+        DEFAULT = '__static_no_match__'
+        CONFIG_ITEMS = ['prefix', 'type', 'ext']
+        for config in getattr(self, 'headers', []):
+            if path.startswith(config.get('prefix', DEFAULT)) or \
+               content_type == config.get('type', DEFAULT) or \
+               path.endswith(config.get('ext', DEFAULT)):
+
+                for key, value in config.items():
+                    if key not in CONFIG_ITEMS:
+                        headers.append((key, value))
 
     def _file_like(self, full_path):
         """Return the appropriate file object."""
